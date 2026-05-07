@@ -42,7 +42,15 @@ for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
 df.fillna(df.median(numeric_only=True), inplace=True)
-df.fillna(0, inplace=True)
+# Fill numeric columns only
+numeric_df = df.select_dtypes(include=[np.number]).columns
+
+df[numeric_df] = df[numeric_df].fillna(0)
+
+# Fill object/string columns separately
+object_df = df.select_dtypes(include=["object", "string"]).columns
+
+df[object_df] = df[object_df].fillna("Unknown")
 
 # =====================================================
 # TITLE
